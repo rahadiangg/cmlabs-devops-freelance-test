@@ -15,3 +15,7 @@ Karena ekspetasi kita adalah ada 2 node dan ingin mendeploy 3 pods di masing-mas
 Yang dimana di `NodeAffinity` saya menggunakan *soft rule* untuk memastikan pod di deploy di node dengan label `topology.kubernetes.io/zone` karena node di Kubernetes saya setting untuk berjalan multiple zone agar sistem kita *resilient* (High Avaibility)
 
 Untuk `PodAntiAffinity` saya menggunakan *preffered rule* atau bisa juga disebut *hard rule*. Yang dimana saya memanfaatkan label `kubernetes.io/hostname` agar pod di di distribusikan ke semua hostname (node) yang ada tapi tetap sedikit patuh dengan `NodeAffinity` sebelumnya.
+
+Maka jika lihat hasil akhirnya akan ada 3 pods di masing-masing node (2) seperti berikut
+
+![Result](/result.png)
