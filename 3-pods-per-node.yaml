@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: nginx-app
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution: # soft rule
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: topology.kubernetes.io/zone
+                  operator: In
+                  values:
+                  - asia-southeast2-a
+                  - asia-southeast2-b
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: # prefered rule
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: nginx-app
+        image: nginx:alpine
+        resources:
+          limits:
+            memory: "128Mi" # threshold memory
+            cpu: "256m"
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-app
+spec:
+  type: LoadBalancer # agar bisa di ekspose keluar cluster
+  selector:
+    app: nginx-app
+  ports:
+  - port: 80
+    targetPort: 80
+
